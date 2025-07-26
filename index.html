@@ -175,6 +175,12 @@
 
                 <!-- Communication & Cancel -->
                 <div class="mt-auto space-y-3 pt-2">
+                    <div id="translation-output" class="bg-gray-700 p-3 rounded-lg text-sm space-y-2 hidden">
+                       <p><span class="font-bold text-gray-400">You said:</span> <span id="original-text-output" class="text-white italic"></span></p>
+                       <p><span class="font-bold text-blue-400">Driver (Eng):</span> <span id="english-translation-output" class="text-white"></span></p>
+                       <p><span class="font-bold text-green-400">Driver (Hin):</span> <span id="hindi-translation-output" class="text-white"></span></p>
+                    </div>
+                     <p id="translation-status" class="text-sm text-gray-400 text-center hidden"></p>
                     <div id="communication-actions" class="flex items-center justify-center space-x-4">
                         <button id="call-driver-btn" class="flex-1 bg-green-600 text-white font-bold py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-green-700">
                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
@@ -185,8 +191,23 @@
                              <span>Message</span>
                         </button>
                     </div>
-                     <p id="translation-status" class="text-sm text-gray-400 text-center hidden"></p>
                     <button id="cancel-btn-tracking" class="w-full bg-gray-700 text-gray-300 font-bold py-3 rounded-lg hover:bg-gray-600">Cancel Request</button>
+                </div>
+            </div>
+
+            <!-- NEW: Call Simulation Screen -->
+            <div id="screen-call" class="hidden flex-grow flex flex-col p-6 h-full bg-gray-900 justify-between items-center text-center">
+                <div class="mt-16">
+                    <div class="w-24 h-24 bg-green-500 rounded-full mx-auto flex items-center justify-center mb-4">
+                        <svg class="w-12 h-12 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                    </div>
+                    <h2 id="call-driver-name" class="text-3xl font-bold text-white"></h2>
+                    <p id="call-status" class="text-lg text-gray-400 mt-2"></p>
+                </div>
+                <div class="w-full mb-8">
+                    <button id="end-call-btn" class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                        <svg class="w-10 h-10 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.62.72v3.1c0 .41-.21.78-.54.96-.88.48-1.85.72-2.84.72-.55 0-1 .45-1 1v2c0 .55.45 1 1 1 3.31 0 6.42-1.24 8.8-3.26.43-.36.63-.93.53-1.49-.24-1.32-.33-2.68-.33-4.03 0-.55-.45-1-1-1zM21 3h-3.5c-.55 0-1 .45-1 1 0 1.25-.2 2.45-.57 3.57-.11.35-.03.74.25 1.02l2.2 2.2c-2.83 1.44-5.14 3.76-6.59 6.59l-2.2-2.2c-.27-.27-.67-.36-1.02-.24-1.12.37-2.33.57-3.57.57-.55 0-1 .45-1 1V20c0 .55.45 1 1 1 9.39 0 17-7.61 17-17 0-.55-.45-1-1-1z"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -206,16 +227,17 @@
 
     <script>
         // --- DOM Elements ---
-        const screens = { home: document.getElementById('screen-home'), location: document.getElementById('screen-location'), triage: document.getElementById('screen-triage'), dispatch: document.getElementById('screen-dispatch'), tracking: document.getElementById('screen-tracking'), };
-        const buttons = { request: document.getElementById('request-btn'), confirmLocation: document.getElementById('confirm-location-btn'), voiceRecord: document.getElementById('voice-record-btn'), submitTriage: document.getElementById('submit-triage-btn'), translateMic: document.getElementById('translate-mic-btn'), skipTriage: document.getElementById('skip-triage-btn'), cancelDispatch: document.getElementById('cancel-btn-dispatch'), cancelTracking: document.getElementById('cancel-btn-tracking'), confirmCancel: document.getElementById('confirm-cancel-btn'), rejectCancel: document.getElementById('reject-cancel-btn'), callDriver: document.getElementById('call-driver-btn') };
+        const screens = { home: document.getElementById('screen-home'), location: document.getElementById('screen-location'), triage: document.getElementById('screen-triage'), dispatch: document.getElementById('screen-dispatch'), tracking: document.getElementById('screen-tracking'), call: document.getElementById('screen-call') };
+        const buttons = { request: document.getElementById('request-btn'), confirmLocation: document.getElementById('confirm-location-btn'), voiceRecord: document.getElementById('voice-record-btn'), submitTriage: document.getElementById('submit-triage-btn'), translateMic: document.getElementById('translate-mic-btn'), skipTriage: document.getElementById('skip-triage-btn'), cancelDispatch: document.getElementById('cancel-btn-dispatch'), cancelTracking: document.getElementById('cancel-btn-tracking'), confirmCancel: document.getElementById('confirm-cancel-btn'), rejectCancel: document.getElementById('reject-cancel-btn'), callDriver: document.getElementById('call-driver-btn'), endCall: document.getElementById('end-call-btn') };
         const loaders = { location: document.getElementById('location-loader'), triage: document.getElementById('triage-loader'), };
-        const uiElements = { cancelModal: document.getElementById('cancel-modal'), locationAddress: document.getElementById('location-address'), voiceStatus: document.getElementById('voice-status'), transcribedText: document.getElementById('transcribed-text'), dispatchMap: document.getElementById('dispatch-map'), dispatchStatusText: document.getElementById('dispatch-status-text'), etaTime: document.getElementById('eta-time'), providerName: document.getElementById('provider-name'), vehicleNumber: document.getElementById('vehicle-number'), ambulanceIcon: document.getElementById('ambulance-icon'), translationStatus: document.getElementById('translation-status'), otpCode: document.getElementById('otp-code'), routePathToUser: document.getElementById('route-path-to-user'), mapDistanceText: document.getElementById('map-distance-text'), destinationHospital: document.getElementById('destination-hospital'),};
+        const uiElements = { cancelModal: document.getElementById('cancel-modal'), locationAddress: document.getElementById('location-address'), voiceStatus: document.getElementById('voice-status'), transcribedText: document.getElementById('transcribed-text'), dispatchMap: document.getElementById('dispatch-map'), dispatchStatusText: document.getElementById('dispatch-status-text'), etaTime: document.getElementById('eta-time'), providerName: document.getElementById('provider-name'), vehicleNumber: document.getElementById('vehicle-number'), ambulanceIcon: document.getElementById('ambulance-icon'), translationStatus: document.getElementById('translation-status'), translationOutput: document.getElementById('translation-output'), originalTextOutput: document.getElementById('original-text-output'), englishTranslationOutput: document.getElementById('english-translation-output'), hindiTranslationOutput: document.getElementById('hindi-translation-output'), otpCode: document.getElementById('otp-code'), routePathToUser: document.getElementById('route-path-to-user'), mapDistanceText: document.getElementById('map-distance-text'), destinationHospital: document.getElementById('destination-hospital'), callDriverName: document.getElementById('call-driver-name'), callStatus: document.getElementById('call-status'),};
         
-        let appState = { triageTranscript: '', ambulanceInfo: null, etaInterval: null, isTriageRecording: false, };
+        let appState = { triageTranscript: '', translationTranscript: '', ambulanceInfo: null, etaInterval: null, callInterval: null, isTriageRecording: false, isTranslateRecording: false, assignedAmbulance: null };
         
         function resetAppState() {
             if (appState.etaInterval) clearInterval(appState.etaInterval);
-            appState = { triageTranscript: '', ambulanceInfo: null, etaInterval: null, isTriageRecording: false, };
+            if (appState.callInterval) clearInterval(appState.callInterval);
+            appState = { triageTranscript: '', translationTranscript: '', ambulanceInfo: null, etaInterval: null, callInterval: null, isTriageRecording: false, isTranslateRecording: false, assignedAmbulance: null };
             uiElements.transcribedText.textContent = 'Your description will appear here...';
             uiElements.transcribedText.classList.add('italic', 'text-gray-400');
             buttons.submitTriage.disabled = true;
@@ -224,9 +246,10 @@
         }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let triageRecognition;
+        let triageRecognition, translationRecognition;
         if (SpeechRecognition) {
             triageRecognition = new SpeechRecognition(); triageRecognition.continuous = true; triageRecognition.lang = 'en-IN'; triageRecognition.interimResults = true;
+            translationRecognition = new SpeechRecognition(); translationRecognition.continuous = false; translationRecognition.lang = 'ta-IN'; translationRecognition.interimResults = false;
         } else {
             buttons.voiceRecord.style.display = 'none'; uiElements.voiceStatus.textContent = 'Sorry, your browser does not support voice recognition.';
             buttons.translateMic.style.display = 'none'; uiElements.translationStatus.textContent = 'Voice features not supported on this browser.';
@@ -266,19 +289,25 @@
         };
 
         buttons.callDriver.onclick = () => {
-            const statusEl = uiElements.translationStatus;
-            statusEl.textContent = "Simulating call to driver...";
-            statusEl.classList.remove('hidden');
-            setTimeout(() => { statusEl.classList.add('hidden'); }, 4000);
+            uiElements.callDriverName.textContent = `Driver (${appState.assignedAmbulance.provider})`;
+            uiElements.callStatus.textContent = "Calling...";
+            navigateTo('call');
+            
+            let callSeconds = 0;
+            if(appState.callInterval) clearInterval(appState.callInterval);
+            appState.callInterval = setInterval(() => {
+                callSeconds++;
+                const minutes = Math.floor(callSeconds / 60);
+                const seconds = callSeconds % 60;
+                uiElements.callStatus.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        };
+
+        buttons.endCall.onclick = () => {
+            if(appState.callInterval) clearInterval(appState.callInterval);
+            navigateTo('tracking');
         };
         
-        buttons.translateMic.onclick = () => {
-             const statusEl = uiElements.translationStatus;
-            statusEl.textContent = "Voice messaging would be enabled here.";
-            statusEl.classList.remove('hidden');
-            setTimeout(() => { statusEl.classList.add('hidden'); }, 4000);
-        }
-
         if (SpeechRecognition) {
             buttons.voiceRecord.onclick = () => { 
                 if (appState.isTriageRecording) {
@@ -295,11 +324,10 @@
             triageRecognition.onend = () => { appState.isTriageRecording = false; uiElements.voiceStatus.textContent = "Tap to speak again or confirm below."; buttons.voiceRecord.classList.remove('bg-red-500'); if (appState.triageTranscript.length > 5) buttons.submitTriage.disabled = false; };
             triageRecognition.onerror = (e) => { console.error('Triage speech error', e.error); if(e.error === 'not-allowed') alert("Microphone access denied."); };
             
-            // FIXED: onresult handler to show interim results
             triageRecognition.onresult = (e) => {
                 let interim_transcript = '';
                 let final_transcript = '';
-                for (let i = e.resultIndex; i < e.results.length; ++i) {
+                for (let i = 0; i < e.results.length; ++i) {
                     if (e.results[i].isFinal) {
                         final_transcript += e.results[i][0].transcript;
                     } else {
@@ -310,6 +338,38 @@
                 uiElements.transcribedText.textContent = final_transcript + interim_transcript;
                 if (final_transcript.length > 5) {
                     buttons.submitTriage.disabled = false;
+                }
+            };
+            
+            buttons.translateMic.onclick = () => {
+                if (appState.isTranslateRecording) {
+                    translationRecognition.stop();
+                } else {
+                    appState.translationTranscript = '';
+                    uiElements.translationStatus.textContent = "Listening in Tamil or English...";
+                    uiElements.translationStatus.classList.remove('hidden');
+                    translationRecognition.start();
+                }
+            };
+            translationRecognition.onstart = () => { appState.isTranslateRecording = true; buttons.translateMic.classList.add('bg-red-500'); };
+            translationRecognition.onend = () => { appState.isTranslateRecording = false; buttons.translateMic.classList.remove('bg-red-500'); uiElements.translationStatus.textContent = "Tap message icon to speak again."; };
+            translationRecognition.onerror = (e) => { console.error('Translation speech error', e.error); uiElements.translationStatus.textContent = `Error: ${e.error}. Try again.`; };
+            translationRecognition.onresult = async (e) => {
+                const transcript = e.results[0][0].transcript;
+                uiElements.translationStatus.textContent = "Translating with AI...";
+                
+                uiElements.translationOutput.classList.remove('hidden');
+                uiElements.originalTextOutput.textContent = `"${transcript}"`;
+                
+                try {
+                    const translations = await getAITranslation(transcript);
+                    uiElements.englishTranslationOutput.textContent = translations.english;
+                    uiElements.hindiTranslationOutput.textContent = translations.hindi;
+                    speak(translations.english);
+                } catch (error) {
+                    console.error("Translation error", error);
+                    uiElements.englishTranslationOutput.textContent = "Translation failed.";
+                    uiElements.hindiTranslationOutput.textContent = "";
                 }
             };
         }
@@ -357,6 +417,11 @@
             const prompt = `You are an emergency medical dispatch AI. Analyze a user's description. Classify it as needing 'Basic Life Support (BLS)' or 'Advanced Life Support (ALS)'. Provide ONLY a valid JSON object with keys "ambulance_type" (either "BLS" or "ALS") and "summary" (a 2-3 word summary). USER'S DESCRIPTION: "${userText}"`;
             return callGemini(prompt, { type: "OBJECT", properties: { "ambulance_type": { "type": "STRING", "enum": ["BLS", "ALS"] }, "summary": { "type": "STRING" } }, required: ["ambulance_type", "summary"] });
         }
+        
+        async function getAITranslation(userText) {
+            const prompt = `You are a translator. Translate the text into English and Hindi. Provide ONLY a valid JSON object with keys "english" and "hindi". USER TEXT: "${userText}"`;
+            return callGemini(prompt, { type: "OBJECT", properties: { "english": { "type": "STRING" }, "hindi": { "type": "STRING" } }, required: ["english", "hindi"] });
+        }
 
         async function callGemini(prompt, responseSchema) {
             const apiKey = ""; // Keep empty
@@ -373,6 +438,8 @@
             }
             throw new Error("API call failed.");
         }
+        
+        function speak(text) { if ('speechSynthesis' in window) { const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance); } }
         
         function startTracking() {
             navigateTo('tracking');
