@@ -7,173 +7,198 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        #ambulance-icon {
-            transition: all 1s linear;
+        #ambulance-icon { transition: all 1s linear; }
+        .blinking-cursor { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { color: transparent; } }
+
+        /* Professional UI Animations & Styles */
+        .recording-orb {
+            animation: pulse-orb 2s infinite;
         }
-        .blinking-cursor {
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            from, to { color: transparent; }
-            50% { color: black; }
-        }
-        .recording {
-            animation: pulse-red 2s infinite;
-        }
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        @keyframes pulse-orb {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 25px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
         .ambulance-dot {
             transition: transform 0.5s ease-in-out, opacity 0.5s;
         }
         .selected-ambulance {
             transform: scale(2.5) !important;
-            filter: drop-shadow(0 0 10px #fef08a); /* yellow glow */
+            filter: drop-shadow(0 0 10px #facc15); /* yellow-400 glow */
         }
-        #ambulance-icon svg {
-             width: 1.5rem; /* 24px */
-             height: 1.5rem; /* 24px */
-        }
-        /* Night mode map with grid */
         .map-grid-bg {
-            background-color: #2d3748; /* Dark blue-grey */
+            background-color: #1f2937; /* gray-800 */
             background-image:
-                linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-            background-size: 25px 25px;
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
+        /* Radar Scan Animation */
+        .radar-scanner {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: conic-gradient(from 0deg, transparent 0%, transparent 75%, rgba(59, 130, 246, 0.2) 95%, transparent 100%);
+            animation: radar-sweep 4s linear infinite;
+            border-radius: 50%;
+        }
+        .radar-grid {
+             background: repeating-radial-gradient(circle at center, rgba(59, 130, 246, 0.2) 0, rgba(59, 130, 246, 0.2) 1px, transparent 1px, transparent 100%) 0 0 / 25% 25%;
+        }
+        @keyframes radar-sweep { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
     <div id="app-container" class="relative max-w-md w-full mx-auto h-screen">
-        <div id="app" class="w-full h-full bg-white shadow-lg flex flex-col">
+        <div id="app" class="w-full h-full bg-gray-900 shadow-2xl flex flex-col text-white">
 
             <!-- Screen 1: Initial Request -->
             <div id="screen-home" class="flex flex-col items-center justify-center text-center p-8 h-full">
-                <h1 class="text-5xl font-extrabold text-red-600">AmbuNow</h1>
-                <p class="text-gray-600 mt-2 mb-12">Tap the button for immediate help.</p>
-                <button id="request-btn" class="bg-red-600 text-white font-bold py-6 px-10 rounded-2xl shadow-xl hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transform transition-transform hover:scale-105 animate-pulse">
+                <div class="mb-8">
+                     <svg class="w-20 h-20 text-red-500 mx-auto" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
+                    </svg>
+                    <h1 class="text-5xl font-extrabold text-white mt-4">Ambu<span class="text-red-500">Now</span></h1>
+                    <p class="text-gray-400 mt-2">Immediate Emergency Assistance</p>
+                </div>
+                <button id="request-btn" class="w-full bg-gradient-to-br from-red-500 to-red-600 text-white font-bold py-5 px-10 rounded-xl shadow-lg hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-red-400 transform transition-transform hover:scale-105">
                     <span class="text-2xl">REQUEST AMBULANCE</span>
                 </button>
-                <p class="text-gray-500 mt-8 text-sm">We will find your location automatically.</p>
+                 <p class="text-gray-500 mt-6 text-sm">We'll find your location automatically.</p>
             </div>
 
             <!-- Screen 2: Location Confirmation -->
-            <div id="screen-location" class="hidden flex flex-col items-center justify-center p-8 h-full">
+            <div id="screen-location" class="hidden flex flex-col items-center justify-center p-6 h-full">
                 <div id="location-loader" class="text-center">
-                    <svg class="animate-spin h-12 w-12 text-red-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    <p class="mt-4 text-lg font-medium text-gray-700">Finding your location...</p>
+                    <svg class="animate-spin h-10 w-10 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <p class="mt-4 text-lg font-medium text-gray-300">Pinpointing your location...</p>
                 </div>
-                <div id="location-confirm-ui" class="hidden text-center">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Confirm Patient Location</h2>
-                     <div class="bg-gray-100 p-4 rounded-lg mb-6 shadow-inner"><p id="location-address" class="text-gray-900 font-semibold"></p></div>
-                    <button id="confirm-location-btn" class="w-full bg-green-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300">CONFIRM LOCATION & PROCEED</button>
-                     <button id="manual-address-btn" class="mt-4 text-sm text-gray-500 hover:text-gray-700">Enter address manually</button>
+                <div id="location-confirm-ui" class="hidden text-center w-full">
+                    <svg class="w-16 h-16 text-blue-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+                    <h2 class="text-2xl font-bold text-white mb-4">Confirm Patient Location</h2>
+                     <div class="bg-gray-800 p-4 rounded-lg mb-6 shadow-inner border border-gray-700"><p id="location-address" class="text-white font-semibold text-lg"></p></div>
+                    <button id="confirm-location-btn" class="w-full bg-green-600 text-white font-bold py-4 rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500">CONFIRM & PROCEED</button>
                 </div>
             </div>
 
             <!-- Screen 3: AI Triage (Voice) -->
-            <div id="screen-triage" class="hidden flex flex-col justify-between p-8 h-full">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Describe the Emergency</h2>
-                    <p id="voice-status" class="text-gray-600 mb-4">Tap the microphone and speak clearly.</p>
-                    <div id="transcribed-text-container" class="w-full min-h-[128px] p-3 bg-gray-100 border-2 border-gray-300 rounded-lg shadow-inner"><p id="transcribed-text" class="text-gray-500 italic">Your description will appear here...</p></div>
+            <div id="screen-triage" class="hidden flex flex-col justify-between p-6 h-full">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-white mb-2">Describe the Emergency</h2>
+                    <p id="voice-status" class="text-gray-400 mb-6">Tap the microphone and speak clearly.</p>
                 </div>
-                <div class="flex flex-col items-center">
-                    <button id="voice-record-btn" class="w-24 h-24 mb-6 bg-red-600 text-white rounded-full flex items-center justify-center shadow-xl focus:outline-none transform transition-transform hover:scale-105"><svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></button>
-                    <button id="submit-triage-btn" class="w-full bg-red-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" disabled>CONFIRM & FIND HELP</button>
-                    <button id="skip-triage-btn" class="w-full mt-4 bg-gray-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-400">CAN'T SPEAK, SEND HELP NOW</button>
+                <div class="flex-grow flex items-center justify-center">
+                    <button id="voice-record-btn" class="w-32 h-32 bg-red-600/20 text-white rounded-full flex items-center justify-center shadow-xl focus:outline-none border-4 border-red-600/50 recording-orb">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                    </button>
                 </div>
-                 <div id="triage-loader" class="hidden text-center mt-6"><p class="text-lg font-medium text-gray-700">Analyzing situation with AI<span class="blinking-cursor">_</span></p></div>
+                <div id="transcribed-text-container" class="w-full min-h-[96px] p-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg shadow-inner flex items-center justify-center text-center">
+                    <p id="transcribed-text" class="text-gray-400 italic">Your description will appear here...</p>
+                </div>
+                <div class="space-y-3">
+                    <button id="submit-triage-btn" class="w-full bg-red-600 text-white font-bold py-4 rounded-lg shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 disabled:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>CONFIRM & FIND HELP</button>
+                    <button id="skip-triage-btn" class="w-full bg-gray-700 text-white font-semibold py-3 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-500">CAN'T SPEAK, SEND HELP NOW</button>
+                </div>
+                 <div id="triage-loader" class="hidden text-center mt-6"><p class="text-lg font-medium text-gray-300">Analyzing situation with AI<span class="blinking-cursor">_</span></p></div>
             </div>
             
             <!-- Screen 4: Dispatch Simulation -->
-            <div id="screen-dispatch" class="hidden flex-grow flex flex-col p-6 h-full bg-gray-800">
-                <div class="relative flex-grow bg-gray-700 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+            <div id="screen-dispatch" class="hidden flex-grow flex flex-col p-6 h-full bg-gray-900 justify-center items-center text-center">
+                <div class="relative w-64 h-64 rounded-full overflow-hidden flex items-center justify-center bg-gray-800 radar-grid">
+                     <div class="radar-scanner"></div>
                      <div id="dispatch-map" class="w-full h-full relative">
-                         <div class="absolute w-8 h-8" style="left: 50%; top: 50%; transform: translate(-50%, -50%);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#60a5fa"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg></div>
-                     </div>
-                     <div id="dispatch-status-overlay" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <p id="dispatch-status-text" class="text-white text-2xl font-bold text-center p-4"></p>
+                         <!-- User dot -->
+                         <div class="absolute w-4 h-4 rounded-full bg-blue-400" style="left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>
                      </div>
                 </div>
-                <!-- NEW: Cancel Button on Dispatch -->
-                <button id="cancel-btn-dispatch" class="w-full mt-4 bg-gray-200 text-gray-800 font-bold py-3 rounded-lg hover:bg-gray-300">Cancel Request</button>
+                <p id="dispatch-status-text" class="text-white text-xl font-semibold text-center mt-8 p-4"></p>
+                <button id="cancel-btn-dispatch" class="w-full mt-4 bg-gray-700 text-gray-300 font-bold py-3 rounded-lg hover:bg-gray-600">Cancel Request</button>
             </div>
 
             <!-- Screen 5: Tracking -->
-            <div id="screen-tracking" class="hidden flex-grow flex flex-col p-4 h-full bg-gray-100">
-                <div class="flex-shrink-0">
-                    <div class="text-center mb-2">
-                        <h2 class="text-3xl font-extrabold text-green-600">Help is on the way!</h2>
-                        <p class="text-gray-700">Your ambulance is en route.</p>
-                    </div>
-                    <div id="map-container" class="relative map-grid-bg h-48 rounded-xl overflow-hidden shadow-inner my-4">
-                        <svg id="map-svg" class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                             <path id="route-path" d="M10 90 Q 50 90, 50 50 T 90 10" stroke="#fef08a" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
-                        </svg>
-                        <div class="absolute" style="left: 90%; top: 10%; transform: translate(-50%, -50%);">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 2c-4.97 0-9 4.03-9 9c0 3.32 1.81 6.23 4.51 7.74L12 22l4.49-3.26A9.005 9.005 0 0 0 21 11c0-4.97-4.03-9-9-9zm0 2c1.1 0 2 .9 2 2s-.9 2-2 2s-2-.9-2-2s.9-2 2-2z" /></svg>
-                            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-1 text-white text-xs font-bold bg-black/50 px-1 rounded">You</span>
-                        </div>
-                        <div id="ambulance-icon" class="absolute">
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="#ef4444" viewBox="0 0 16 16"><path d="M8.5 5a.5.5 0 0 1 .5.5V7H10a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 .5-.5z"/><path d="M4 0a.5.5 0 0 0-.5.5v15a.5.5 0 0 0 .5.5H12a.5.5 0 0 0 .5-.5v-15A.5.5 0 0 0 12 0H4zm4.5 4.969c.47 0 .82.264.943.602l.688 2.593c.062.235.12.564.12.878 0 .438-.08.847-.232 1.22l-.467 1.12c-.22.527-.611.968-1.12 1.226l-1.031.516c-.34.17-.73.17-1.07 0l-1.03-.516c-.51-.258-.9-.7-1.12-1.226l-.468-1.12C4.08 9.847 4 9.438 4 9c0-.314.058-.643.12-.878l.688-2.593C4.94 5.233 5.29 4.97 5.76 4.97h2.48z"/></svg>
-                        </div>
-                        <div id="map-distance-text" class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded"></div>
-                    </div>
+            <div id="screen-tracking" class="hidden flex-grow flex flex-col p-4 h-full bg-gray-800">
+                <div class="text-center pt-2 pb-2">
+                    <h2 class="text-2xl font-bold text-white">Help is on the way!</h2>
+                </div>
+                
+                <div class="bg-gray-900 rounded-xl p-4 shadow-lg border border-gray-700 text-center mb-4">
+                     <p class="text-lg text-gray-400">Estimated Arrival In</p>
+                    <p id="eta-time" class="text-7xl font-extrabold text-white tracking-tighter">12:00</p>
+                </div>
 
-                    <div class="text-center mb-4">
-                        <p class="text-xl text-gray-600">Estimated Arrival</p>
-                        <p id="eta-time" class="text-6xl font-extrabold text-gray-900">12:00</p>
+                <!-- Map Card -->
+                <div id="map-container" class="relative map-grid-bg h-48 rounded-xl overflow-hidden shadow-inner border border-gray-700 mb-4">
+                    <svg id="map-svg" class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                         <!-- Route from Ambulance to User -->
+                         <path id="route-path-to-user" d="M10 90 C 25 75, 40 60, 50 50" stroke="#facc15" stroke-width="2" fill="none"/>
+                         <!-- Route from User to Hospital -->
+                         <path id="route-path-to-hospital" d="M50 50 C 60 40, 75 25, 90 10" stroke-width="1.5" stroke="#facc15" fill="none" stroke-dasharray="3 3" stroke-opacity="0.5"/>
+                    </svg>
+                    <!-- User Icon -->
+                    <div class="absolute" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" viewBox="0 0 24 24" fill="#60a5fa"><path d="M12 2c-4.97 0-9 4.03-9 9c0 3.32 1.81 6.23 4.51 7.74L12 22l4.49-3.26A9.005 9.005 0 0 0 21 11c0-4.97-4.03-9-9-9zm0 2c1.1 0 2 .9 2 2s-.9 2-2 2s-2-.9-2-2s.9-2 2-2z" /></svg>
                     </div>
+                     <!-- Hospital Icon -->
+                     <div class="absolute" style="left: 90%; top: 10%; transform: translate(-50%, -50%);">
+                        <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18 18H6V6h12v12zm0-14H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2z" /><path d="M11 11h2v6h-2z" /><path d="M9 9h6v2H9z" /></svg>
+                     </div>
+                    <!-- Ambulance Icon -->
+                    <div id="ambulance-icon" class="absolute w-6 h-6">
+                         <svg xmlns="http://www.w3.org/2000/svg" fill="#ef4444" viewBox="0 0 16 16"><path d="M8.5 5a.5.5 0 0 1 .5.5V7H10a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 .5-.5z"/><path d="M4 0a.5.5 0 0 0-.5.5v15a.5.5 0 0 0 .5.5H12a.5.5 0 0 0 .5-.5v-15A.5.5 0 0 0 12 0H4zm4.5 4.969c.47 0 .82.264.943.602l.688 2.593c.062.235.12.564.12.878 0 .438-.08.847-.232 1.22l-.467 1.12c-.22.527-.611.968-1.12 1.226l-1.031.516c-.34.17-.73.17-1.07 0l-1.03-.516c-.51-.258-.9-.7-1.12-1.226l-.468-1.12C4.08 9.847 4 9.438 4 9c0-.314.058-.643.12-.878l.688-2.593C4.94 5.233 5.29 4.97 5.76 4.97h2.48z"/></svg>
+                    </div>
+                    <div id="map-distance-text" class="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded"></div>
+                </div>
 
-                     <div class="bg-white rounded-lg p-4 shadow-md mb-4">
-                        <div class="grid grid-cols-2 gap-4 text-sm">
-                            <div><span class="font-medium text-gray-600 block">Ambulance Type</span> <span id="ambulance-type" class="font-bold text-red-600"></span></div>
-                            <div><span class="font-medium text-gray-600 block">Provider</span> <span id="provider-name" class="font-semibold text-gray-800"></span></div>
-                            <div><span class="font-medium text-gray-600 block">Vehicle No</span> <span id="vehicle-number" class="font-mono text-gray-800"></span></div>
-                            <div class="text-right"><span class="font-medium text-gray-600 block">Arrival OTP</span> <span id="otp-code" class="font-bold text-black tracking-widest text-lg"></span></div>
-                        </div>
+                <!-- Details & OTP Card -->
+                <div class="bg-gray-900 rounded-xl p-4 shadow-lg border border-gray-700 mb-4">
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                        <div class="col-span-2"><span class="font-medium text-gray-400 block text-sm">Destination</span> <span id="destination-hospital" class="font-bold text-white text-base"></span></div>
+                        <div><span class="font-medium text-gray-400 block text-sm">Provider</span> <span id="provider-name" class="font-semibold text-white text-base"></span></div>
+                        <div><span class="font-medium text-gray-400 block text-sm">Vehicle No.</span> <span id="vehicle-number" class="font-mono text-white text-base"></span></div>
+                    </div>
+                     <div class="border-t border-gray-700 mt-4 pt-3 flex justify-between items-center">
+                        <span class="font-medium text-gray-400 text-sm">ARRIVAL OTP</span>
+                        <span id="otp-code" class="font-bold text-white tracking-widest text-2xl bg-gray-700 px-3 py-1 rounded-md"></span>
                      </div>
                 </div>
 
-                <!-- Communication Section -->
-                <div class="flex-grow bg-white rounded-lg p-4 shadow-md flex flex-col justify-between mt-auto">
-                     <div>
-                        <h3 class="font-bold text-lg mb-2">Communicate with Driver</h3>
-                        <p id="translation-status" class="text-sm text-gray-500 mb-2">Tap the mic to send a translated voice message.</p>
-                        <div id="translation-output" class="bg-gray-100 p-3 rounded-lg min-h-[80px] text-sm space-y-2 hidden">
-                           <p><span class="font-bold">You said:</span> <span id="original-text-output"></span></p>
-                           <p><span class="font-bold text-blue-600">Driver (Eng):</span> <span id="english-translation-output"></span></p>
-                           <p><span class="font-bold text-green-600">Driver (Hin):</span> <span id="hindi-translation-output"></span></p>
-                        </div>
+                <!-- Communication & Cancel -->
+                <div class="mt-auto space-y-3 pt-2">
+                    <div id="communication-actions" class="flex items-center justify-center space-x-4">
+                        <button id="call-driver-btn" class="flex-1 bg-green-600 text-white font-bold py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-green-700">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            <span>Call Driver</span>
+                        </button>
+                        <button id="translate-mic-btn" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-blue-700">
+                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                             <span>Message</span>
+                        </button>
                     </div>
-                    <div class="flex justify-center items-center mt-4 space-x-4">
-                         <button id="translate-mic-btn" class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg focus:outline-none transform transition-transform hover:scale-105"><svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg></button>
-                         <button id="cancel-btn-tracking" class="flex-grow bg-gray-200 text-gray-800 font-bold py-3 rounded-lg hover:bg-gray-300">Cancel Request</button>
-                    </div>
+                     <p id="translation-status" class="text-sm text-gray-400 text-center hidden"></p>
+                    <button id="cancel-btn-tracking" class="w-full bg-gray-700 text-gray-300 font-bold py-3 rounded-lg hover:bg-gray-600">Cancel Request</button>
                 </div>
             </div>
         </div>
 
-        <!-- NEW: Cancellation Modal -->
-        <div id="cancel-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-lg shadow-2xl p-6 text-center w-full max-w-sm">
-                <h3 class="text-xl font-bold mb-4">Are you sure?</h3>
-                <p class="text-gray-600 mb-6">Do you really want to cancel this emergency request?</p>
+        <!-- Cancellation Modal -->
+        <div id="cancel-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-2xl p-6 text-center w-full max-w-sm">
+                <h3 class="text-xl font-bold text-white mb-4">Are you sure?</h3>
+                <p class="text-gray-400 mb-6">Do you really want to cancel this emergency request?</p>
                 <div class="flex justify-center space-x-4">
                     <button id="confirm-cancel-btn" class="bg-red-600 text-white font-bold py-2 px-8 rounded-lg hover:bg-red-700">Yes, Cancel</button>
-                    <button id="reject-cancel-btn" class="bg-gray-300 text-gray-800 font-bold py-2 px-8 rounded-lg hover:bg-gray-400">No</button>
+                    <button id="reject-cancel-btn" class="bg-gray-600 text-gray-200 font-bold py-2 px-8 rounded-lg hover:bg-gray-500">No</button>
                 </div>
             </div>
         </div>
@@ -182,25 +207,26 @@
     <script>
         // --- DOM Elements ---
         const screens = { home: document.getElementById('screen-home'), location: document.getElementById('screen-location'), triage: document.getElementById('screen-triage'), dispatch: document.getElementById('screen-dispatch'), tracking: document.getElementById('screen-tracking'), };
-        const buttons = { request: document.getElementById('request-btn'), confirmLocation: document.getElementById('confirm-location-btn'), voiceRecord: document.getElementById('voice-record-btn'), submitTriage: document.getElementById('submit-triage-btn'), translateMic: document.getElementById('translate-mic-btn'), skipTriage: document.getElementById('skip-triage-btn'), cancelDispatch: document.getElementById('cancel-btn-dispatch'), cancelTracking: document.getElementById('cancel-btn-tracking'), confirmCancel: document.getElementById('confirm-cancel-btn'), rejectCancel: document.getElementById('reject-cancel-btn'), };
+        const buttons = { request: document.getElementById('request-btn'), confirmLocation: document.getElementById('confirm-location-btn'), voiceRecord: document.getElementById('voice-record-btn'), submitTriage: document.getElementById('submit-triage-btn'), translateMic: document.getElementById('translate-mic-btn'), skipTriage: document.getElementById('skip-triage-btn'), cancelDispatch: document.getElementById('cancel-btn-dispatch'), cancelTracking: document.getElementById('cancel-btn-tracking'), confirmCancel: document.getElementById('confirm-cancel-btn'), rejectCancel: document.getElementById('reject-cancel-btn'), callDriver: document.getElementById('call-driver-btn') };
         const loaders = { location: document.getElementById('location-loader'), triage: document.getElementById('triage-loader'), };
-        const uiElements = { cancelModal: document.getElementById('cancel-modal'), locationAddress: document.getElementById('location-address'), voiceStatus: document.getElementById('voice-status'), transcribedText: document.getElementById('transcribed-text'), dispatchMap: document.getElementById('dispatch-map'), dispatchStatusText: document.getElementById('dispatch-status-text'), etaTime: document.getElementById('eta-time'), ambulanceType: document.getElementById('ambulance-type'), providerName: document.getElementById('provider-name'), vehicleNumber: document.getElementById('vehicle-number'), ambulanceIcon: document.getElementById('ambulance-icon'), translationStatus: document.getElementById('translation-status'), translationOutput: document.getElementById('translation-output'), originalTextOutput: document.getElementById('original-text-output'), englishTranslationOutput: document.getElementById('english-translation-output'), hindiTranslationOutput: document.getElementById('hindi-translation-output'), otpCode: document.getElementById('otp-code'), routePath: document.getElementById('route-path'), mapDistanceText: document.getElementById('map-distance-text'), };
+        const uiElements = { cancelModal: document.getElementById('cancel-modal'), locationAddress: document.getElementById('location-address'), voiceStatus: document.getElementById('voice-status'), transcribedText: document.getElementById('transcribed-text'), dispatchMap: document.getElementById('dispatch-map'), dispatchStatusText: document.getElementById('dispatch-status-text'), etaTime: document.getElementById('eta-time'), providerName: document.getElementById('provider-name'), vehicleNumber: document.getElementById('vehicle-number'), ambulanceIcon: document.getElementById('ambulance-icon'), translationStatus: document.getElementById('translation-status'), otpCode: document.getElementById('otp-code'), routePathToUser: document.getElementById('route-path-to-user'), mapDistanceText: document.getElementById('map-distance-text'), destinationHospital: document.getElementById('destination-hospital'),};
         
-        let appState = { triageTranscript: '', translationTranscript: '', ambulanceInfo: null, etaInterval: null, isTriageRecording: false, isTranslateRecording: false, assignedAmbulance: null, };
+        let appState = { triageTranscript: '', ambulanceInfo: null, etaInterval: null, isTriageRecording: false, };
         
         function resetAppState() {
             if (appState.etaInterval) clearInterval(appState.etaInterval);
-            appState = { triageTranscript: '', translationTranscript: '', ambulanceInfo: null, etaInterval: null, isTriageRecording: false, isTranslateRecording: false, assignedAmbulance: null, };
+            appState = { triageTranscript: '', ambulanceInfo: null, etaInterval: null, isTriageRecording: false, };
             uiElements.transcribedText.textContent = 'Your description will appear here...';
-            uiElements.transcribedText.classList.add('italic', 'text-gray-500');
+            uiElements.transcribedText.classList.add('italic', 'text-gray-400');
             buttons.submitTriage.disabled = true;
+            document.getElementById('triage-loader').classList.add('hidden');
+            document.querySelector('#screen-triage .space-y-3').style.display = 'block';
         }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let triageRecognition, translationRecognition;
+        let triageRecognition;
         if (SpeechRecognition) {
-            triageRecognition = new SpeechRecognition(); triageRecognition.continuous = false; triageRecognition.lang = 'en-IN'; triageRecognition.interimResults = true;
-            translationRecognition = new SpeechRecognition(); translationRecognition.continuous = false; translationRecognition.lang = 'ta-IN'; translationRecognition.interimResults = false;
+            triageRecognition = new SpeechRecognition(); triageRecognition.continuous = true; triageRecognition.lang = 'en-IN'; triageRecognition.interimResults = true;
         } else {
             buttons.voiceRecord.style.display = 'none'; uiElements.voiceStatus.textContent = 'Sorry, your browser does not support voice recognition.';
             buttons.translateMic.style.display = 'none'; uiElements.translationStatus.textContent = 'Voice features not supported on this browser.';
@@ -213,7 +239,8 @@
         
         buttons.submitTriage.onclick = async () => {
             if (appState.triageTranscript.trim().length < 10) { alert('Please provide a more detailed description.'); return; }
-            buttons.voiceRecord.classList.add('hidden'); buttons.submitTriage.classList.add('hidden'); buttons.skipTriage.classList.add('hidden'); loaders.triage.classList.remove('hidden');
+            document.querySelector('#screen-triage .space-y-3').style.display = 'none';
+            loaders.triage.classList.remove('hidden');
             try {
                 appState.ambulanceInfo = await getAIAssessment(appState.triageTranscript);
                 initiateDispatch();
@@ -228,8 +255,7 @@
              appState.ambulanceInfo = { ambulance_type: 'ALS', summary: 'Emergency - User Skipped Input' };
              initiateDispatch();
         };
-
-        // --- NEW: Cancellation Logic ---
+        
         buttons.cancelDispatch.onclick = () => uiElements.cancelModal.classList.remove('hidden');
         buttons.cancelTracking.onclick = () => uiElements.cancelModal.classList.remove('hidden');
         buttons.rejectCancel.onclick = () => uiElements.cancelModal.classList.add('hidden');
@@ -239,70 +265,90 @@
             navigateTo('home');
         };
 
-        if (SpeechRecognition) {
-            buttons.voiceRecord.onclick = () => { if (appState.isTriageRecording) triageRecognition.stop(); else { appState.triageTranscript = ''; uiElements.transcribedText.textContent = 'Listening...'; uiElements.transcribedText.classList.remove('italic', 'text-gray-500'); uiElements.transcribedText.classList.add('text-gray-900'); buttons.submitTriage.disabled = true; triageRecognition.start(); } };
-            triageRecognition.onstart = () => { appState.isTriageRecording = true; uiElements.voiceStatus.textContent = "Listening... Tap mic to stop."; buttons.voiceRecord.classList.add('recording'); };
-            triageRecognition.onend = () => { appState.isTriageRecording = false; uiElements.voiceStatus.textContent = "Tap to speak again or confirm below."; buttons.voiceRecord.classList.remove('recording'); if (appState.triageTranscript.length > 5) buttons.submitTriage.disabled = false; };
-            triageRecognition.onerror = (e) => { console.error('Triage speech error', e.error); if(e.error === 'not-allowed') alert("Microphone access denied."); };
-            triageRecognition.onresult = (e) => {
-                let interim = ''; let final = appState.triageTranscript;
-                for (let i = e.resultIndex; i < e.results.length; ++i) { if (e.results[i].isFinal) final += e.results[i][0].transcript; else interim += e.results[i][0].transcript; }
-                appState.triageTranscript = final; uiElements.transcribedText.textContent = final + interim;
-            };
+        buttons.callDriver.onclick = () => {
+            const statusEl = uiElements.translationStatus;
+            statusEl.textContent = "Simulating call to driver...";
+            statusEl.classList.remove('hidden');
+            setTimeout(() => { statusEl.classList.add('hidden'); }, 4000);
+        };
+        
+        buttons.translateMic.onclick = () => {
+             const statusEl = uiElements.translationStatus;
+            statusEl.textContent = "Voice messaging would be enabled here.";
+            statusEl.classList.remove('hidden');
+            setTimeout(() => { statusEl.classList.add('hidden'); }, 4000);
+        }
 
-            buttons.translateMic.onclick = () => { if (appState.isTranslateRecording) translationRecognition.stop(); else { appState.translationTranscript = ''; uiElements.translationStatus.textContent = "Listening in Tamil or English..."; translationRecognition.start(); } };
-            translationRecognition.onstart = () => { appState.isTranslateRecording = true; buttons.translateMic.classList.add('recording'); };
-            translationRecognition.onend = () => { appState.isTranslateRecording = false; buttons.translateMic.classList.remove('recording'); uiElements.translationStatus.textContent = "Tap the mic to send another message."; };
-            translationRecognition.onerror = (e) => { console.error('Translation speech error', e.error); uiElements.translationStatus.textContent = `Error: ${e.error}. Try again.`; };
-            translationRecognition.onresult = async (e) => {
-                const transcript = e.results[0][0].transcript;
-                appState.translationTranscript = transcript;
-                uiElements.translationStatus.textContent = "Translating with AI..."; uiElements.translationOutput.classList.remove('hidden');
-                uiElements.originalTextOutput.textContent = `"${transcript}"`;
-                try {
-                    const translations = await getAITranslation(transcript);
-                    uiElements.englishTranslationOutput.textContent = translations.english;
-                    uiElements.hindiTranslationOutput.textContent = translations.hindi;
-                    speak(translations.english);
-                } catch (error) {
-                    console.error("Translation error", error);
-                    uiElements.englishTranslationOutput.textContent = "Translation failed."; uiElements.hindiTranslationOutput.textContent = "";
+        if (SpeechRecognition) {
+            buttons.voiceRecord.onclick = () => { 
+                if (appState.isTriageRecording) {
+                    triageRecognition.stop();
+                } else { 
+                    appState.triageTranscript = ''; 
+                    uiElements.transcribedText.textContent = ''; 
+                    uiElements.transcribedText.classList.remove('italic', 'text-gray-400');
+                    buttons.submitTriage.disabled = true; 
+                    triageRecognition.start(); 
+                } 
+            };
+            triageRecognition.onstart = () => { appState.isTriageRecording = true; uiElements.voiceStatus.textContent = "Listening... Tap mic to stop."; buttons.voiceRecord.classList.add('bg-red-500'); };
+            triageRecognition.onend = () => { appState.isTriageRecording = false; uiElements.voiceStatus.textContent = "Tap to speak again or confirm below."; buttons.voiceRecord.classList.remove('bg-red-500'); if (appState.triageTranscript.length > 5) buttons.submitTriage.disabled = false; };
+            triageRecognition.onerror = (e) => { console.error('Triage speech error', e.error); if(e.error === 'not-allowed') alert("Microphone access denied."); };
+            
+            // FIXED: onresult handler to show interim results
+            triageRecognition.onresult = (e) => {
+                let interim_transcript = '';
+                let final_transcript = '';
+                for (let i = e.resultIndex; i < e.results.length; ++i) {
+                    if (e.results[i].isFinal) {
+                        final_transcript += e.results[i][0].transcript;
+                    } else {
+                        interim_transcript += e.results[i][0].transcript;
+                    }
+                }
+                appState.triageTranscript = final_transcript;
+                uiElements.transcribedText.textContent = final_transcript + interim_transcript;
+                if (final_transcript.length > 5) {
+                    buttons.submitTriage.disabled = false;
                 }
             };
         }
 
         function getUserLocation() {
-            document.getElementById('location-loader').classList.remove('hidden'); document.getElementById('location-confirm-ui').classList.add('hidden');
+            loaders.location.classList.remove('hidden'); document.getElementById('location-confirm-ui').classList.add('hidden');
             setTimeout(() => {
                 uiElements.locationAddress.textContent = 'Near Anna Nagar, Chennai';
-                document.getElementById('location-loader').classList.add('hidden'); document.getElementById('location-confirm-ui').classList.remove('hidden');
+                loaders.location.classList.add('hidden'); document.getElementById('location-confirm-ui').classList.remove('hidden');
             }, 1500);
         }
         
         async function initiateDispatch() {
             navigateTo('dispatch');
-            const setStatus = (text) => new Promise(res => { uiElements.dispatchStatusText.textContent = text; setTimeout(res, 2000); });
-            await setStatus("Finding nearby available ambulances...");
+            const setStatus = (text, duration = 2000) => new Promise(res => { uiElements.dispatchStatusText.textContent = text; setTimeout(res, duration); });
+            await setStatus("Finding nearby available ambulances...", 3000);
             const availableAmbulances = createFakeAmbulances(5);
-            uiElements.dispatchMap.innerHTML = '<div class="absolute w-8 h-8" style="left: 50%; top: 50%; transform: translate(-50%, -50%);"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#60a5fa"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg></div>'; // Clear previous dots
             availableAmbulances.forEach(ambu => uiElements.dispatchMap.appendChild(ambu.element));
             await setStatus("Selecting the closest one...");
             let closestAmbulance = availableAmbulances.sort((a,b) => a.distance - b.distance)[0];
             appState.assignedAmbulance = closestAmbulance; closestAmbulance.element.classList.add('selected-ambulance');
-            await setStatus("Closest Ambulance Assigned!");
-            await setStatus(`Routing to nearest hospital...`);
+            await setStatus("Ambulance Assigned!");
+            await setStatus("Routing to your location...");
             startTracking();
         }
         
         function createFakeAmbulances(count) {
             return Array.from({length: count}, () => {
-                const x = Math.random() * 80 + 10, y = Math.random() * 80 + 10;
+                const angle = Math.random() * 2 * Math.PI;
+                const radius = Math.random() * 35 + 10;
+                const x = 50 + radius * Math.cos(angle);
+                const y = 50 + radius * Math.sin(angle);
                 const vehicleId = `TN-0${Math.floor(Math.random()*9+1)}-${String.fromCharCode(65+Math.random()*26)}${String.fromCharCode(65+Math.random()*26)}-${Math.floor(1000+Math.random()*9000)}`;
-                const provider = ["Apollo Ambulance", "Fortis Medics", "Kauvery Response", "Rapid Rescue"][Math.floor(Math.random()*4)];
+                const provider = ["Apollo Response", "Fortis Medics", "Kauvery Rescue", "Rapid Med-Line"][Math.floor(Math.random()*4)];
                 const element = document.createElement('div');
-                element.className = 'absolute w-6 h-6 ambulance-dot';
+                element.className = 'absolute w-5 h-5 ambulance-dot opacity-0';
                 element.style.left = `${x}%`; element.style.top = `${y}%`;
                 element.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#f87171"><path d="M12 2C15.87 2 19 5.13 19 9C19 14.25 12 22 12 22S5 14.25 5 9C5 5.13 8.13 2 12 2ZM11 6V8H9V10H11V12H13V10H15V8H13V6H11Z" /></svg>`;
+                setTimeout(() => element.classList.remove('opacity-0'), Math.random() * 1000);
                 return { x, y, vehicleId, provider, element, distance: Math.hypot(x-50, y-50) };
             });
         }
@@ -311,14 +357,9 @@
             const prompt = `You are an emergency medical dispatch AI. Analyze a user's description. Classify it as needing 'Basic Life Support (BLS)' or 'Advanced Life Support (ALS)'. Provide ONLY a valid JSON object with keys "ambulance_type" (either "BLS" or "ALS") and "summary" (a 2-3 word summary). USER'S DESCRIPTION: "${userText}"`;
             return callGemini(prompt, { type: "OBJECT", properties: { "ambulance_type": { "type": "STRING", "enum": ["BLS", "ALS"] }, "summary": { "type": "STRING" } }, required: ["ambulance_type", "summary"] });
         }
-        
-        async function getAITranslation(userText) {
-            const prompt = `You are a translator. Translate the text into English and Hindi. Provide ONLY a valid JSON object with keys "english" and "hindi". USER TEXT: "${userText}"`;
-            return callGemini(prompt, { type: "OBJECT", properties: { "english": { "type": "STRING" }, "hindi": { "type": "STRING" } }, required: ["english", "hindi"] });
-        }
 
         async function callGemini(prompt, responseSchema) {
-            const apiKey = "";
+            const apiKey = ""; // Keep empty
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema } };
             for (let i = 0; i < 3; i++) {
@@ -333,18 +374,14 @@
             throw new Error("API call failed.");
         }
         
-        function speak(text) { if ('speechSynthesis' in window) { const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance); } }
-
         function startTracking() {
             navigateTo('tracking');
-            uiElements.ambulanceType.textContent = `${appState.ambulanceInfo.ambulance_type} - ${appState.ambulanceInfo.summary}`;
+            uiElements.destinationHospital.textContent = "Apollo Hospital, Greams Road";
             uiElements.providerName.textContent = appState.assignedAmbulance.provider;
             uiElements.vehicleNumber.textContent = appState.assignedAmbulance.vehicleId;
+            uiElements.otpCode.textContent = Math.floor(1000 + Math.random() * 9000);
             
-            const otp = Math.floor(1000 + Math.random() * 9000);
-            uiElements.otpCode.textContent = otp;
-            
-            const path = uiElements.routePath;
+            const path = uiElements.routePathToUser;
             const pathLength = path.getTotalLength();
             const totalTripDistance = 5.0; 
             let etaSeconds = 8 * 60; 
@@ -365,7 +402,6 @@
                 uiElements.etaTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 
                 const progress = 1 - (etaSeconds / totalSeconds);
-                
                 const remainingDistance = totalTripDistance * (1 - progress);
                 uiElements.mapDistanceText.textContent = `${remainingDistance.toFixed(1)} km away`;
                 
@@ -383,7 +419,6 @@
             }, 1000);
         }
 
-        // Initial navigation
         resetAppState();
         navigateTo('home');
     </script>
